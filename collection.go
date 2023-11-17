@@ -12,11 +12,7 @@ type Collection struct {
 }
 
 func (c *Collection) Find(filter interface{}) *Cursor {
-	cur, err := c.c.Find(context.Background(), filter)
-	if err != nil {
-		panic(err)
-	}
-	return &Cursor{cur}
+	return &Cursor{c: c, filter: filter}
 }
 
 func (c *Collection) FindOne(filter interface{}, result interface{}) error {
