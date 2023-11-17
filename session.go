@@ -16,6 +16,7 @@ func (s *Session) Close() error {
 }
 
 func (s *Session) DatabaseNames() ([]string, error) {
+
 	return s.c.ListDatabaseNames(s.ctx, nil)
 }
 

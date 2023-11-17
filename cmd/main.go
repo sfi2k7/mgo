@@ -44,7 +44,13 @@ func main() {
 	defer s.Close()
 
 	var all []*S3Zipper
-	err = s.DB("blue").C("s3zipper").Find(bson.M{}).Select(bson.M{"_id": 1, "status": 1, "startedAt": 1}).Sort("-startedAt").Skip(0).Limit(10).All(&all)
+	err = s.DB("blue").C("s3zipper").Find(bson.M{}).Select(
+		bson.M{
+			"_id":       1,
+			"status":    1,
+			"startedAt": 1,
+		}).Sort("-startedAt").Skip(0).Limit(10).All(&all)
+
 	if err != nil {
 		panic(err)
 	}

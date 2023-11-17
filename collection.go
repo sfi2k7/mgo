@@ -65,3 +65,7 @@ func (c *Collection) UpdateOne(filter interface{}, update interface{}) error {
 	_, err := c.c.UpdateOne(context.Background(), filter, update)
 	return err
 }
+
+func (c *Collection) Bulk() *Bulk {
+	return &Bulk{c: c}
+}
