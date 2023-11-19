@@ -15,9 +15,8 @@ func (c *Collection) Find(filter interface{}) *Cursor {
 	return &Cursor{c: c, filter: filter}
 }
 
-func (c *Collection) FindOne(filter interface{}, result interface{}) error {
-	single := c.c.FindOne(context.Background(), filter)
-	return single.Decode(result)
+func (c *Collection) FindOne(filter interface{}) *Cursor {
+	return &Cursor{issingle: true, c: c, filter: filter}
 }
 
 func (c *Collection) InsertOne(doc interface{}) error {

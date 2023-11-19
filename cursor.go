@@ -9,6 +9,7 @@ import (
 
 type Cursor struct {
 	c          *Collection
+	issingle   bool
 	filter     interface{}
 	limit      int64
 	skip       int64
@@ -53,6 +54,27 @@ func (c *Cursor) Sort(sort ...string) *Cursor {
 func (c *Cursor) Select(projection interface{}) *Cursor {
 	c.projection = projection
 	return c
+}
+
+func (c *Cursor) prepareOptions(int64, error) {
+
+}
+
+func (c *Cursor) One(result interface{}) error {
+	var opts []*options.FindOneOptions
+	if c.projection != nil {
+		opts = append(opts, options.FindOne().SetProjection(c.projection))
+	}
+
+	if c.sort != nil {
+		opts = append(opts, options.FindOne().SetSort(c.sort))
+	}
+
+	if c.skip > 0 {
+		opts = append(opts, options.FindOne().SetSkip(c.skip))
+	}
+
+	return c.c.c.FindOne(context.Background(), c.filter, opts...).Decode(result)
 }
 
 func (c *Cursor) All(result interface{}) error {
