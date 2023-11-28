@@ -4,7 +4,10 @@ import (
 	"context"
 
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
+
+type UpdateResult = mongo.UpdateResult
 
 type Collection struct {
 	c *mongo.Collection
@@ -63,6 +66,13 @@ func (c *Collection) Update(filter interface{}, update interface{}) error {
 func (c *Collection) UpdateOne(filter interface{}, update interface{}) error {
 	_, err := c.c.UpdateOne(context.Background(), filter, update)
 	return err
+}
+
+func (c *Collection) Upsert(filter, update interface{}) (*UpdateResult, error) {
+	upsert := true
+	uopt := options.UpdateOptions{Upsert: &upsert}
+	ur, err := c.c.UpdateOne(context.Background(), filter, update, &uopt)
+	return ur, err
 }
 
 func (c *Collection) Bulk() *Bulk {

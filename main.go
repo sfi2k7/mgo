@@ -14,6 +14,7 @@ func NewSession(u string) (*Session, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return &Session{c, ctx}, nil
 }
 
