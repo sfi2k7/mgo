@@ -9,6 +9,10 @@ import (
 
 type UpdateResult = mongo.UpdateResult
 
+func IsErrNotFound(err error) bool {
+	return err == mongo.ErrNoDocuments
+}
+
 type Collection struct {
 	c *mongo.Collection
 	d *Database
@@ -58,14 +62,14 @@ func (c *Collection) EstimatedDocumentCount() (int64, error) {
 	return c.c.EstimatedDocumentCount(context.Background())
 }
 
-func (c *Collection) Update(filter interface{}, update interface{}) error {
-	_, err := c.c.UpdateMany(context.Background(), filter, update)
-	return err
+func (c *Collection) Update(filter interface{}, update interface{}) (*UpdateResult, error) {
+	ur, err := c.c.UpdateMany(context.Background(), filter, update)
+	return ur, err
 }
 
-func (c *Collection) UpdateOne(filter interface{}, update interface{}) error {
-	_, err := c.c.UpdateOne(context.Background(), filter, update)
-	return err
+func (c *Collection) UpdateOne(filter interface{}, update interface{}) (*UpdateResult, error) {
+	ur, err := c.c.UpdateOne(context.Background(), filter, update)
+	return ur, err
 }
 
 func (c *Collection) Upsert(filter, update interface{}) (*UpdateResult, error) {
