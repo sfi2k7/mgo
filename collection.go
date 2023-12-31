@@ -3,6 +3,7 @@ package mgo
 import (
 	"context"
 
+	"github.com/sfi2k7/mgo/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -43,6 +44,10 @@ func (c *Collection) Count(filter interface{}) (int64, error) {
 func (c *Collection) DeleteOne(filter interface{}) error {
 	_, err := c.c.DeleteOne(context.Background(), filter)
 	return err
+}
+
+func (c *Collection) FindId(id interface{}) *Cursor {
+	return &Cursor{issingle: true, c: c, filter: bson.M{"_id": id}}
 }
 
 func (c *Collection) Delete(filter interface{}) error {
