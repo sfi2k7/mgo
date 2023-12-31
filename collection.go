@@ -55,7 +55,17 @@ func (c *Collection) Delete(filter interface{}) error {
 	return err
 }
 
+func (c *Collection) Remove(filter interface{}) error {
+	_, err := c.c.DeleteMany(context.Background(), filter)
+	return err
+}
+
 func (c *Collection) DeleteId(id interface{}) error {
+	_, err := c.c.DeleteOne(context.Background(), bson.M{"_id": id})
+	return err
+}
+
+func (c *Collection) RemoveId(id interface{}) error {
 	_, err := c.c.DeleteOne(context.Background(), bson.M{"_id": id})
 	return err
 }
