@@ -55,6 +55,11 @@ func (c *Collection) Delete(filter interface{}) error {
 	return err
 }
 
+func (c *Collection) DeleteId(id interface{}) error {
+	_, err := c.c.DeleteOne(context.Background(), bson.M{"_id": id})
+	return err
+}
+
 func (c *Collection) Distinct(key string, filter interface{}) ([]interface{}, error) {
 	return c.c.Distinct(context.Background(), key, filter)
 }
