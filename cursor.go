@@ -27,6 +27,10 @@ func (c *Cursor) Skip(skip int64) *Cursor {
 	return c
 }
 
+func (c *Cursor) Count() (int64, error) {
+	return c.c.c.CountDocuments(context.Background(), c.filter)
+}
+
 func (c *Cursor) Sort(sort ...string) *Cursor {
 
 	if len(sort) == 0 {
@@ -56,9 +60,9 @@ func (c *Cursor) Select(projection interface{}) *Cursor {
 	return c
 }
 
-func (c *Cursor) prepareOptions(int64, error) {
+// func (c *Cursor) prepareOptions(int64, error) {
 
-}
+// }
 
 func (c *Cursor) One(result interface{}) error {
 	var opts []*options.FindOneOptions
