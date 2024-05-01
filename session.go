@@ -16,7 +16,6 @@ func (s *Session) Close() error {
 }
 
 func (s *Session) DatabaseNames() ([]string, error) {
-
 	return s.c.ListDatabaseNames(s.ctx, nil)
 }
 
@@ -26,6 +25,11 @@ func (s *Session) NumberSessionsInProgress() int {
 
 func (s *Session) Ping() error {
 	return s.c.Ping(s.ctx, nil)
+}
+
+func (s *Session) Clone() mongo.Session {
+	ns, _ := s.c.StartSession(nil)
+	return ns
 }
 
 func (s *Session) DB(name string) *Database {
