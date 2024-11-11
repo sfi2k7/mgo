@@ -7,6 +7,13 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+func IsErrorNotFound(err error) bool {
+	return err == mongo.ErrNoDocuments
+}
+
+var ErrNotFound = mongo.ErrNoDocuments
+
+// type ErrNotFound = mongo.Error
 func NewSession(u string) (*Session, error) {
 	ctx := context.Background()
 	var err error
