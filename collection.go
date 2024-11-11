@@ -19,6 +19,10 @@ type Collection struct {
 	d *Database
 }
 
+func (c *Collection) Count() (int64, error) {
+	return c.c.EstimatedDocumentCount(context.Background())
+}
+
 func (c *Collection) Find(filter interface{}) *Cursor {
 	return &Cursor{c: c, filter: filter}
 }

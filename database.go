@@ -19,6 +19,10 @@ func (d *Database) Name() string {
 	return d.db.Name()
 }
 
+func (d *Database) CollectionNames() ([]string, error) {
+	return d.db.ListCollectionNames(d.s.ctx, nil)
+}
+
 func (d *Database) Run(cmd interface{}, result interface{}) error {
 	return d.db.RunCommand(d.s.ctx, cmd).Decode(result)
 }
