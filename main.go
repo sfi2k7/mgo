@@ -18,6 +18,10 @@ func NewSession(u string) (*Session, error) {
 	return &Session{c, ctx}, nil
 }
 
+func Dial(u string) (*Session, error) {
+	return NewSession(u)
+}
+
 // func main() {
 // 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 // 	defer cancel()

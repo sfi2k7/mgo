@@ -19,7 +19,7 @@ type Collection struct {
 	d *Database
 }
 
-func (c *Collection) Count() (int64, error) {
+func (c *Collection) EstimatedCount() (int64, error) {
 	return c.c.EstimatedDocumentCount(context.Background())
 }
 
