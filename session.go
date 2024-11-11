@@ -3,6 +3,7 @@ package mgo
 import (
 	"context"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -16,7 +17,7 @@ func (s *Session) Close() error {
 }
 
 func (s *Session) DatabaseNames() ([]string, error) {
-	return s.c.ListDatabaseNames(s.ctx, nil)
+	return s.c.ListDatabaseNames(s.ctx, bson.D{})
 }
 
 func (s *Session) NumberSessionsInProgress() int {

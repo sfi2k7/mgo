@@ -1,6 +1,9 @@
 package mgo
 
-import "go.mongodb.org/mongo-driver/mongo"
+import (
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+)
 
 type Database struct {
 	db *mongo.Database
@@ -20,7 +23,7 @@ func (d *Database) Name() string {
 }
 
 func (d *Database) CollectionNames() ([]string, error) {
-	return d.db.ListCollectionNames(d.s.ctx, nil)
+	return d.db.ListCollectionNames(d.s.ctx, bson.D{})
 }
 
 func (d *Database) Run(cmd interface{}, result interface{}) error {
