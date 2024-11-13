@@ -61,12 +61,12 @@ func (b *Bulk) Delete(filters ...interface{}) error {
 }
 
 type BulkResult struct {
-	MatchedCount  int64
-	ModifiedCount int64
-	UpsertedCount int64
+	MatchedCount  int
+	ModifiedCount int
+	UpsertedCount int
 	UpsertedIDs   map[int64]interface{}
-	DeletedCount  int64
-	InsertedCount int64
+	DeletedCount  int
+	InsertedCount int
 }
 
 func (b *Bulk) Run() (*BulkResult, error) {
@@ -76,11 +76,11 @@ func (b *Bulk) Run() (*BulkResult, error) {
 	}
 
 	return &BulkResult{
-		MatchedCount:  br.MatchedCount,
-		ModifiedCount: br.ModifiedCount,
-		UpsertedCount: br.UpsertedCount,
+		MatchedCount:  int(br.MatchedCount),
+		ModifiedCount: int(br.ModifiedCount),
+		UpsertedCount: int(br.UpsertedCount),
 		UpsertedIDs:   br.UpsertedIDs,
-		DeletedCount:  br.DeletedCount,
-		InsertedCount: br.InsertedCount,
+		DeletedCount:  int(br.DeletedCount),
+		InsertedCount: int(br.InsertedCount),
 	}, nil
 }

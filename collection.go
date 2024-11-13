@@ -19,8 +19,9 @@ type Collection struct {
 	d *Database
 }
 
-func (c *Collection) EstimatedCount() (int64, error) {
-	return c.c.EstimatedDocumentCount(context.Background())
+func (c *Collection) EstimatedCount() (int, error) {
+	n, err := c.c.EstimatedDocumentCount(context.Background())
+	return int(n), err
 }
 
 func (c *Collection) Find(filter interface{}) *Cursor {
@@ -41,8 +42,9 @@ func (c *Collection) Insert(docs ...interface{}) error {
 	return err
 }
 
-func (c *Collection) Count(filter interface{}) (int64, error) {
-	return c.c.CountDocuments(context.Background(), filter)
+func (c *Collection) Count(filter interface{}) (int, error) {
+	n, err := c.c.CountDocuments(context.Background(), filter)
+	return int(n), err
 }
 
 func (c *Collection) DeleteOne(filter interface{}) error {
@@ -104,8 +106,9 @@ func (c *Collection) DropCollection() error {
 	return c.c.Drop(context.Background())
 }
 
-func (c *Collection) EstimatedDocumentCount() (int64, error) {
-	return c.c.EstimatedDocumentCount(context.Background())
+func (c *Collection) EstimatedDocumentCount() (int, error) {
+	n, err := c.c.EstimatedDocumentCount(context.Background())
+	return int(n), err
 }
 
 func (c *Collection) Update(filter interface{}, update interface{}) (*UpdateResult, error) {

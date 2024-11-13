@@ -34,20 +34,24 @@ func (c *Cursor) Skip(skip int) *Cursor {
 	return c
 }
 
-func (c *Cursor) Count() (int64, error) {
+func (c *Cursor) Count() (int, error) {
 	if c.c == nil {
 		return 0, errors.New("cursor is closed")
 	}
 
-	return c.c.c.CountDocuments(context.Background(), c.filter)
+	n, err := c.c.c.CountDocuments(context.Background(), c.filter)
+
+	return int(n), err
 }
 
-func (c *Cursor) EstimatedCount() (int64, error) {
+func (c *Cursor) EstimatedCount() (int, error) {
 	if c.c == nil {
 		return 0, errors.New("cursor is closed")
 	}
 
-	return c.c.c.EstimatedDocumentCount(context.Background())
+	n, err := c.c.c.EstimatedDocumentCount(context.Background())
+
+	return int(n), err
 }
 
 func (c *Cursor) Sort(sort ...string) *Cursor {
