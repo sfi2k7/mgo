@@ -24,11 +24,11 @@ func (c *Collection) EstimatedCount() (int64, error) {
 }
 
 func (c *Collection) Find(filter interface{}) *Cursor {
-	return &Cursor{c: c, filter: filter}
+	return &Cursor{cursortype: cursorTypeQuery, c: c, filter: filter}
 }
 
 func (c *Collection) FindOne(filter interface{}) *Cursor {
-	return &Cursor{issingle: true, c: c, filter: filter}
+	return &Cursor{cursortype: cursorTypeQuery, issingle: true, c: c, filter: filter}
 }
 
 func (c *Collection) InsertOne(doc interface{}) error {
@@ -54,14 +54,36 @@ func (c *Collection) FindId(id interface{}) *Cursor {
 	return &Cursor{issingle: true, c: c, filter: bson.M{"_id": id}}
 }
 
-func (c *Collection) Delete(filter interface{}) error {
-	_, err := c.c.DeleteMany(context.Background(), filter)
-	return err
+func (c *Collection) Delete(filter interface{}) (int, error) {
+	dr, err := c.c.DeleteOne(context.Background(), filter)
+	if err != nil {
+		return 0, err
+	}
+	return int(dr.DeletedCount), err
 }
 
-func (c *Collection) Remove(filter interface{}) error {
-	_, err := c.c.DeleteMany(context.Background(), filter)
-	return err
+func (c *Collection) DeleteAll(filter interface{}) (int, error) {
+	dm, err := c.c.DeleteMany(context.Background(), filter)
+	if err != nil {
+		return 0, err
+	}
+	return int(dm.DeletedCount), err
+}
+
+func (c *Collection) Remove(filter interface{}) (int, error) {
+	dr, err := c.c.DeleteOne(context.Background(), filter)
+	if err != nil {
+		return 0, err
+	}
+	return int(dr.DeletedCount), err
+}
+
+func (c *Collection) RemoveAll(filter interface{}) (int, error) {
+	dm, err := c.c.DeleteMany(context.Background(), filter)
+	if err != nil {
+		return 0, err
+	}
+	return int(dm.DeletedCount), err
 }
 
 func (c *Collection) DeleteId(id interface{}) error {
@@ -96,11 +118,27 @@ func (c *Collection) UpdateOne(filter interface{}, update interface{}) (*UpdateR
 	return ur, err
 }
 
+func (c *Collection) UpdateId(id interface{}, update interface{}) (*UpdateResult, error) {
+	ur, err := c.c.UpdateByID(context.Background(), id, update)
+	return ur, err
+}
+
 func (c *Collection) Upsert(filter, update interface{}) (*UpdateResult, error) {
 	upsert := true
 	uopt := options.UpdateOptions{Upsert: &upsert}
 	ur, err := c.c.UpdateOne(context.Background(), filter, update, &uopt)
 	return ur, err
+}
+
+func (c *Collection) UpsertId(id, update interface{}) (*UpdateResult, error) {
+	upsert := true
+	uopt := options.UpdateOptions{Upsert: &upsert}
+	ur, err := c.c.UpdateByID(context.Background(), bson.M{"_id": id}, update, &uopt)
+	return ur, err
+}
+
+func (c *Collection) Pipe(pipeline interface{}) *AggregateCursor {
+	return &AggregateCursor{c: c.c, pipeline: pipeline}
 }
 
 func (c *Collection) Bulk() *Bulk {

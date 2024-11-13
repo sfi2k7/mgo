@@ -2,33 +2,52 @@ package mgo
 
 import (
 	"context"
+	"errors"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
+)
+
+const (
+	cursorTypeQuery       = 1
+	cursorTypeAggregation = 2
 )
 
 type Cursor struct {
 	c          *Collection
 	issingle   bool
 	filter     interface{}
-	limit      int64
-	skip       int64
+	limit      int
+	skip       int
 	sort       interface{}
 	projection interface{}
+	cursortype int
 }
 
-func (c *Cursor) Limit(limit int64) *Cursor {
+func (c *Cursor) Limit(limit int) *Cursor {
 	c.limit = limit
 	return c
 }
 
-func (c *Cursor) Skip(skip int64) *Cursor {
+func (c *Cursor) Skip(skip int) *Cursor {
 	c.skip = skip
 	return c
 }
 
 func (c *Cursor) Count() (int64, error) {
+	if c.c == nil {
+		return 0, errors.New("cursor is closed")
+	}
+
 	return c.c.c.CountDocuments(context.Background(), c.filter)
+}
+
+func (c *Cursor) EstimatedCount() (int64, error) {
+	if c.c == nil {
+		return 0, errors.New("cursor is closed")
+	}
+
+	return c.c.c.EstimatedDocumentCount(context.Background())
 }
 
 func (c *Cursor) Sort(sort ...string) *Cursor {
@@ -60,11 +79,11 @@ func (c *Cursor) Select(projection interface{}) *Cursor {
 	return c
 }
 
-// func (c *Cursor) prepareOptions(int64, error) {
-
-// }
-
 func (c *Cursor) One(result interface{}) error {
+	if c.c == nil {
+		return errors.New("cursor is closed")
+	}
+
 	var opts []*options.FindOneOptions
 	if c.projection != nil {
 		opts = append(opts, options.FindOne().SetProjection(c.projection))
@@ -75,21 +94,28 @@ func (c *Cursor) One(result interface{}) error {
 	}
 
 	if c.skip > 0 {
-		opts = append(opts, options.FindOne().SetSkip(c.skip))
+		opts = append(opts, options.FindOne().SetSkip(int64(c.skip)))
 	}
 
-	return c.c.c.FindOne(context.Background(), c.filter, opts...).Decode(result)
+	err := c.c.c.FindOne(context.Background(), c.filter, opts...).Decode(result)
+
+	c.c = nil
+	return err
 }
 
 func (c *Cursor) All(result interface{}) error {
+	if c.c == nil {
+		return errors.New("cursor is closed")
+	}
+
 	var opts []*options.FindOptions
 
 	if c.limit > 0 {
-		opts = append(opts, options.Find().SetLimit(c.limit))
+		opts = append(opts, options.Find().SetLimit(int64(c.limit)))
 	}
 
 	if c.skip > 0 {
-		opts = append(opts, options.Find().SetSkip(c.skip))
+		opts = append(opts, options.Find().SetSkip(int64(c.skip)))
 	}
 
 	if c.sort != nil {
@@ -105,5 +131,8 @@ func (c *Cursor) All(result interface{}) error {
 	if err != nil {
 		return err
 	}
-	return cur.All(context.Background(), result)
+
+	err = cur.All(context.Background(), result)
+	c.c = nil
+	return err
 }
