@@ -80,12 +80,12 @@ func (c *Collection) Remove(filter interface{}) (int, error) {
 	return int(dr.DeletedCount), err
 }
 
-func (c *Collection) RemoveAll(filter interface{}) (int, error) {
+func (c *Collection) RemoveAll(filter interface{}) (*mongo.DeleteResult, error) {
 	dm, err := c.c.DeleteMany(context.Background(), filter)
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
-	return int(dm.DeletedCount), err
+	return dm, err
 }
 
 func (c *Collection) DeleteId(id interface{}) error {
@@ -112,6 +112,11 @@ func (c *Collection) EstimatedDocumentCount() (int, error) {
 }
 
 func (c *Collection) Update(filter interface{}, update interface{}) (*UpdateResult, error) {
+	ur, err := c.c.UpdateMany(context.Background(), filter, update)
+	return ur, err
+}
+
+func (c *Collection) UpdateAll(filter interface{}, update interface{}) (*UpdateResult, error) {
 	ur, err := c.c.UpdateMany(context.Background(), filter, update)
 	return ur, err
 }

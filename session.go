@@ -2,6 +2,8 @@ package mgo
 
 import (
 	"context"
+	"fmt"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -13,7 +15,13 @@ type Session struct {
 }
 
 func (s *Session) Close() error {
-	return s.c.Disconnect(s.ctx)
+	err := s.c.Disconnect(s.ctx)
+	s.c = nil
+	return err
+}
+
+func (s *Session) SetSocketTimeout(d time.Duration) {
+	fmt.Println("SetSocketTimeout is not implemented")
 }
 
 func (s *Session) DatabaseNames() ([]string, error) {

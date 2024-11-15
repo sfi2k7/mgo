@@ -22,6 +22,10 @@ func (d *Database) Name() string {
 	return d.db.Name()
 }
 
+func (d *Database) Session() *Session {
+	return d.s
+}
+
 func (d *Database) CollectionNames() ([]string, error) {
 	return d.db.ListCollectionNames(d.s.ctx, bson.D{})
 }

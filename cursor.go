@@ -83,6 +83,26 @@ func (c *Cursor) Select(projection interface{}) *Cursor {
 	return c
 }
 
+func (c *Cursor) Distinct(key string) ([]string, error) {
+	if c.c == nil {
+		return nil, errors.New("cursor is closed")
+	}
+
+	var vals []string
+	distincts, err := c.c.c.Distinct(context.Background(), key, c.filter)
+
+	if err != nil {
+		return nil, err
+	}
+
+	for _, each := range distincts {
+		vals = append(vals, each.(string))
+	}
+
+	distincts = nil
+	return vals, err
+}
+
 func (c *Cursor) One(result interface{}) error {
 	if c.c == nil {
 		return errors.New("cursor is closed")

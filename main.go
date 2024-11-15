@@ -2,12 +2,21 @@ package mgo
 
 import (
 	"context"
+	"strings"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func IsErrorNotFound(err error) bool {
+	if err == nil {
+		return false
+	}
+
+	if strings.Contains(err.Error(), "no documents in result") {
+		return true
+	}
+
 	return err == mongo.ErrNoDocuments
 }
 
