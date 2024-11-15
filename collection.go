@@ -139,9 +139,28 @@ func (c *Collection) Upsert(filter, update interface{}) (*UpdateResult, error) {
 }
 
 func (c *Collection) UpsertId(id, update interface{}) (*UpdateResult, error) {
+	// single := c.c.FindOne(context.Background(), bson.M{"_id": id})
+	// if single.Err() != nil {
+	// 	if single.Err() == mongo.ErrNoDocuments {
+	// 		u, ok := update.(bson.M)
+	// 		if ok {
+	// 			_, err := c.c.InsertOne(context.Background(), bson.M{"_id": id})
+	// 			if err != nil {
+	// 				return nil, err
+	// 			}
+	// 		} else {
+	// 			return nil, errors.New("UpsertId: update must be a bson.M")
+	// 		}
+
+	// 	} else {
+	// 		return nil, single.Err()
+	// 	}
+	// }
+
 	upsert := true
 	uopt := options.UpdateOptions{Upsert: &upsert}
-	ur, err := c.c.UpdateByID(context.Background(), bson.M{"_id": id}, update, &uopt)
+	ur, err := c.c.UpdateOne(context.Background(), bson.D{{"_id", id}}, update, &uopt)
+	// ur, err := c.c.UpdateByID(context.Background(), bson.M{"_id": id}, update, &uopt)
 	return ur, err
 }
 
