@@ -37,6 +37,9 @@ type S3Zipper struct {
 }
 
 func main() {
+	RenameExample()
+	// indexExample()
+	return
 	s, err := mgo.NewSession("mongodb://localhost:27017")
 	if err != nil {
 		panic(err)
@@ -59,5 +62,54 @@ func main() {
 
 	for _, each := range all {
 		fmt.Println("each: ", each.StartedAt, each.ID)
+	}
+}
+
+type indexobject struct {
+	Background       bool   `bson:"background"`
+	DefaultLanguage  string `bson:"default_language"`
+	Key              bson.D `bson:"key"`
+	LanguageOverride string `bson:"language_override"`
+	Name             string `bson:"name"`
+	TextIndexVersion int    `bson:"textIndexVersion"`
+	V                int    `bson:"v"`
+	Weights          bson.D `bson:"weights"`
+}
+
+func RenameExample() {
+	s, err := mgo.NewSession("mongodb://localhost:27017")
+	if err != nil {
+		panic(err)
+	}
+	defer s.Close()
+
+	err = s.DB("admin").RenameCollection("needrenamed.oldname", "needrenamed.newname")
+	if err != nil {
+		panic(err)
+	}
+}
+
+func indexExample() {
+	s, err := mgo.NewSession("mongodb://localhost:27017")
+	if err != nil {
+		panic(err)
+	}
+	defer s.Close()
+
+	// fmt.Println("Connected to MongoDB!", s.Ping())
+	// c, err := s.DB("blueAction").C("t_keys").Indexes().List(context.TODO())
+	// if err != nil {
+	// 	panic(err)
+	// }
+	var all = s.DB("blueAction").C("t_keys").ListIndexes()
+	// err = c.All(context.TODO(), &all)
+	// if err != nil {
+	// 	panic(err)
+	// }
+
+	fmt.Println("all: ", len(all))
+
+	for _, each := range all {
+		fmt.Println("each: ", each)
 	}
 }
