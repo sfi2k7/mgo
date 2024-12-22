@@ -8,7 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type indexobject struct {
+type Indexobject struct {
 	Background       bool   `bson:"background,omitempty"`
 	DefaultLanguage  string `bson:"default_language,omitempty"`
 	Key              bson.D `bson:"key,omitempty"`
@@ -20,13 +20,13 @@ type indexobject struct {
 	Unique           bool   `bson:"unique,omitempty"`
 }
 
-func (c *Collection) ListIndexes() []*indexobject {
+func (c *Collection) ListIndexes() []*Indexobject {
 	list, err := c.c.Indexes().List(context.TODO())
 	if err != nil {
 		return nil
 	}
 
-	var all []*indexobject
+	var all []*Indexobject
 	err = list.All(context.TODO(), &all)
 	if err != nil {
 		return nil
@@ -43,7 +43,7 @@ func (c *Collection) CreateIndexSimple(name string, keys interface{}) error {
 	return err
 }
 
-func (c *Collection) CreateIndex(index indexobject) error {
+func (c *Collection) CreateIndex(index Indexobject) error {
 	indexOptions := options.Index()
 
 	if index.Background {
