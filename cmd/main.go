@@ -37,32 +37,47 @@ type S3Zipper struct {
 }
 
 func main() {
-	RenameExample()
+	// mongoUrl := blueregistryclient.GetKeyUsingDefaultUrl("apps.migration.blueserver.node4")
+	// s, err := mgo.NewSession(mongoUrl)
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// defer s.Close()
+
+	// indeces := s.DB("acoapp").C("providers").ListIndexes()
+	// for _, index := range indeces {
+	// 	jsoned, _ := json.Marshal(index)
+	// 	fmt.Println("index:", string(jsoned))
+	// }
+	// return
+
+	// RenameExample()
 	// indexExample()
 	return
-	s, err := mgo.NewSession("mongodb://localhost:27017")
-	if err != nil {
-		panic(err)
-	}
-	defer s.Close()
 
-	var all []*S3Zipper
-	err = s.DB("blue").C("s3zipper").Find(bson.M{}).Select(
-		bson.M{
-			"_id":       1,
-			"status":    1,
-			"startedAt": 1,
-		}).Sort("-startedAt").Skip(0).Limit(10).All(&all)
+	// s, err := mgo.NewSession("mongodb://localhost:27017")
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// defer s.Close()
 
-	if err != nil {
-		panic(err)
-	}
+	// var all []*S3Zipper
+	// err = s.DB("blue").C("s3zipper").Find(bson.M{}).Select(
+	// 	bson.M{
+	// 		"_id":       1,
+	// 		"status":    1,
+	// 		"startedAt": 1,
+	// 	}).Sort("-startedAt").Skip(0).Limit(10).All(&all)
 
-	fmt.Println("all: ", len(all))
+	// if err != nil {
+	// 	panic(err)
+	// }
 
-	for _, each := range all {
-		fmt.Println("each: ", each.StartedAt, each.ID)
-	}
+	// fmt.Println("all: ", len(all))
+
+	// for _, each := range all {
+	// 	fmt.Println("each: ", each.StartedAt, each.ID)
+	// }
 }
 
 type indexobject struct {

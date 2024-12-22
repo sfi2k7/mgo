@@ -15,3 +15,8 @@ type RegEx = primitive.Regex
 func ObjectIdHex() string {
 	return primitive.NewObjectID().Hex()
 }
+
+func IsValidObjectIdHex(s string) bool {
+	_, err := primitive.ObjectIDFromHex(s)
+	return err == nil
+}

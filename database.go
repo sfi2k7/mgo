@@ -1,6 +1,9 @@
 package mgo
 
 import (
+	"context"
+	"fmt"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -24,6 +27,16 @@ func (d *Database) Name() string {
 
 func (d *Database) Session() *Session {
 	return d.s
+}
+
+func (d *Database) RenameCollection(oldName, newName string) error {
+	singleResult := d.db.RunCommand(
+		context.TODO(),
+		bson.D{{Key: "renameCollection", Value: fmt.Sprintf("%s.%s", d.db.Name(), oldName)},
+			{Key: "to", Value: fmt.Sprintf("%s.%s", d.db.Name(), newName)},
+		})
+
+	return singleResult.Err()
 }
 
 func (d *Database) CollectionNames() ([]string, error) {

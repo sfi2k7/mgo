@@ -1,0 +1,1 @@
+rsync -azv --exclude=cmd/backend/backend --exclude=cmd/site/web --exclude=cmd/site/site --exclude=node_modules --exclude=cmd/web/web --exclude=.git --exclude=*.exe . ubuntu@acowebapp:/home/ubuntu/go/src/github.com/sfi2k7/mgo
