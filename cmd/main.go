@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/sfi2k7/blueregistryclient"
 	"github.com/sfi2k7/mgo"
 	"github.com/sfi2k7/mgo/bson"
 )
@@ -36,14 +37,49 @@ type S3Zipper struct {
 	Reason            string    `bson:"reason"`
 }
 
-func main() {
-	// mongoUrl := blueregistryclient.GetKeyUsingDefaultUrl("apps.migration.blueserver.node4")
-	// s, err := mgo.NewSession(mongoUrl)
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// defer s.Close()
+func dtom(d bson.D) map[string]interface{} {
+	m := make(map[string]interface{})
+	for _, each := range d {
+		value := each.Value
 
+		if _, ok := value.(bson.D); ok {
+			value = dtom(value.(bson.D))
+		}
+
+		m[each.Key] = value
+	}
+	return m
+}
+
+func main() {
+	mongoUrl := blueregistryclient.GetKeyUsingDefaultUrl("apps.migration.blueserver.node4")
+	s, err := mgo.NewSession(mongoUrl)
+	if err != nil {
+		panic(err)
+	}
+	defer s.Close()
+
+	var status interface{}
+	s.DB("acoapp").RunCommand(bson.M{"collStats": "providers"}, &status)
+	stats, err := s.DB("acoapp").C("providers").Stats()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("stats: %+v\n ", stats.StorageSize)
+	// d := status.(bson.D)
+	// m := dtom(d)
+	// jsoned, _ := json.Marshal(m)
+
+	// fmt.Println("status: ", string(jsoned))
+
+	// jsoned, _ := json.Marshal(m)
+	// fmt.Println("status: ", string(jsoned))
+
+	// jsoned, _ := json.Marshal(status)
+	// fmt.Println("status: ", string(jsoned))
+	// fmt.Println("err: ", err)
+	// fmt.Println("status: ", status)
 	// indeces := s.DB("acoapp").C("providers").ListIndexes()
 	// for _, index := range indeces {
 	// 	jsoned, _ := json.Marshal(index)

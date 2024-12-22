@@ -25,6 +25,10 @@ func (d *Database) Name() string {
 	return d.db.Name()
 }
 
+func (d *Database) RunCommand(cmd, result interface{}) error {
+	return d.db.RunCommand(d.s.ctx, cmd).Decode(result)
+}
+
 func (d *Database) Session() *Session {
 	return d.s
 }

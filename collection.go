@@ -150,6 +150,13 @@ func (c *Collection) Pipe(pipeline interface{}) *AggregateCursor {
 	return &AggregateCursor{c: c.c, pipeline: pipeline}
 }
 
+func (c *Collection) Stats() (*CollectionStats, error) {
+	var stats CollectionStats
+	err := c.d.RunCommand(bson.M{"collStats": c.c.Name()}, &stats)
+
+	return &stats, err
+}
+
 func (c *Collection) Bulk() *Bulk {
 	return &Bulk{c: c}
 }
