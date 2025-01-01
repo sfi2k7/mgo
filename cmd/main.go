@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -37,6 +38,18 @@ type S3Zipper struct {
 	Reason            string    `bson:"reason"`
 }
 
+func etom(e bson.E) map[string]interface{} {
+	m := make(map[string]interface{})
+	value := e.Value
+
+	if _, ok := value.(bson.D); ok {
+		value = dtom(value.(bson.D))
+	}
+
+	m[e.Key] = value
+	return m
+}
+
 func dtom(d bson.D) map[string]interface{} {
 	m := make(map[string]interface{})
 	for _, each := range d {
@@ -46,27 +59,57 @@ func dtom(d bson.D) map[string]interface{} {
 			value = dtom(value.(bson.D))
 		}
 
+		if _, ok := value.(bson.E); ok {
+			value = etom(value.(bson.E))
+		}
+
 		m[each.Key] = value
 	}
 	return m
 }
 
 func main() {
-	mongoUrl := blueregistryclient.GetKeyUsingDefaultUrl("apps.migration.blueserver.node4")
+	mongoUrl := blueregistryclient.GetKeyUsingDefaultUrl("apps.migration.blueserver.blueserver")
+	// if runtime.GOOS == "darwin" {
+	// 	mongoUrl = "mongodb://localhost:27017"
+	// }
+
 	s, err := mgo.NewSession(mongoUrl)
 	if err != nil {
 		panic(err)
 	}
 	defer s.Close()
 
-	var status interface{}
-	s.DB("acoapp").RunCommand(bson.M{"collStats": "providers"}, &status)
-	stats, err := s.DB("acoapp").C("providers").Stats()
+	var result bson.D
+	// var command = bson.D{{"find", "providers"}, {"filter", bson.E{"_id", "302420"}}}
+	var command = bson.M{"hostInfo": 1}
+	// cursor, err := s.DB("acoapp").RunCommandCursor(command)
+	err = s.DB("acoapp").RunCommand(command, &result)
 	if err != nil {
-		panic(err)
+		fmt.Println("err: (run) ", err)
 	}
 
-	fmt.Printf("stats: %+v\n ", stats.StorageSize)
+	var m = dtom(result)
+
+	jsoned, _ := json.MarshalIndent(m, "", "  ")
+	fmt.Println("result: ", string(jsoned))
+	// fmt.Printf("m: %+v\n ", m)
+
+	// err = cursor.All(context.Background(), &result)
+	// if err != nil {
+	// 	fmt.Println("err: (all)", err)
+	// }
+
+	// fmt.Printf("result: %v\n ", result)
+
+	// var status interface{}
+	// s.DB("acoapp").RunCommand(bson.M{"collStats": "providers"}, &status)
+	// stats, err := s.DB("acoapp").C("providers").Stats()
+	// if err != nil {
+	// 	panic(err)
+	// }
+
+	// fmt.Printf("stats: %+v\n ", stats.StorageSize)
 	// d := status.(bson.D)
 	// m := dtom(d)
 	// jsoned, _ := json.Marshal(m)
@@ -89,7 +132,7 @@ func main() {
 
 	// RenameExample()
 	// indexExample()
-	return
+	// return
 
 	// s, err := mgo.NewSession("mongodb://localhost:27017")
 	// if err != nil {

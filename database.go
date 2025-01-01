@@ -29,6 +29,10 @@ func (d *Database) RunCommand(cmd, result interface{}) error {
 	return d.db.RunCommand(d.s.ctx, cmd).Decode(result)
 }
 
+func (d *Database) RunCommandCursor(cmd interface{}) (*mongo.Cursor, error) {
+	return d.db.RunCommandCursor(d.s.ctx, cmd)
+}
+
 func (d *Database) Session() *Session {
 	return d.s
 }
