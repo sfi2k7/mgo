@@ -24,14 +24,18 @@ var ErrNotFound = mongo.ErrNoDocuments
 
 // type ErrNotFound = mongo.Error
 func NewSession(u string) (*Session, error) {
+	bsonOpt := &options.BSONOptions{
+		DefaultDocumentM: true,
+	}
+
 	ctx := context.Background()
 	var err error
-	c, err := mongo.Connect(ctx, options.Client().ApplyURI(u))
+	c, err := mongo.Connect(ctx, options.Client().ApplyURI(u).SetBSONOptions(bsonOpt))
 	if err != nil {
 		return nil, err
 	}
 
-	return &Session{c, ctx}, nil
+	return &Session{c, ctx, 0}, nil
 }
 
 func Dial(u string) (*Session, error) {

@@ -35,6 +35,26 @@ func (c *Collection) ListIndexes() []*Indexobject {
 	return all
 }
 
+func (c *Collection) DropIndex(name string) error {
+	_, err := c.c.Indexes().DropOne(context.Background(), name)
+	return err
+}
+
+func (c *Collection) ListIndexesInterface() []interface{} {
+	list, err := c.c.Indexes().List(context.TODO())
+	if err != nil {
+		return nil
+	}
+
+	var all []interface{}
+	err = list.All(context.TODO(), &all)
+	if err != nil {
+		return nil
+	}
+
+	return all
+}
+
 func (c *Collection) CreateIndexSimple(name string, keys interface{}) error {
 	_, err := c.c.Indexes().CreateOne(context.Background(), mongo.IndexModel{
 		Keys:    keys,
@@ -43,7 +63,7 @@ func (c *Collection) CreateIndexSimple(name string, keys interface{}) error {
 	return err
 }
 
-func (c *Collection) CreateIndex(index Indexobject) error {
+func (c *Collection) CreateIndex(index *Indexobject) error {
 	indexOptions := options.Index()
 
 	if index.Background {

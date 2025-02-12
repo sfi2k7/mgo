@@ -10,14 +10,19 @@ import (
 )
 
 type Session struct {
-	c   *mongo.Client
-	ctx context.Context
+	c       *mongo.Client
+	ctx     context.Context
+	counter int
 }
 
 func (s *Session) Close() error {
 	err := s.c.Disconnect(s.ctx)
 	s.c = nil
 	return err
+}
+
+func (s *Session) CloseNoOp() {
+	s.counter--
 }
 
 func (s *Session) SetSocketTimeout(d time.Duration) {
@@ -37,5 +42,6 @@ func (s *Session) Ping() error {
 }
 
 func (s *Session) DB(name string) *Database {
+	s.counter++
 	return &Database{s.c.Database(name), s}
 }
