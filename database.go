@@ -22,6 +22,7 @@ func (d *Database) DropDatabase() error {
 }
 
 func (d *Database) Name() string {
+
 	return d.db.Name()
 }
 
