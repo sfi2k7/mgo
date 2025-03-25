@@ -37,6 +37,7 @@ type MoveDatabaseResponse struct {
 }
 
 func (u utilities) CopyDatabaseWithURI(sourceURI, targetURI string, options *MoveDatabaseOptions) *MoveDatabaseResponse {
+	options.DeleteDatabaseIfExists = false
 	s, err := Dial(sourceURI)
 	if err != nil {
 		return &MoveDatabaseResponse{Error: err.Error()}
